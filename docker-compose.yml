@@ -1,0 +1,43 @@
+services:
+  backend:
+    build: .
+    env_file: .env
+    volumes:
+      - ./:/app
+      - /app/node_modules
+    ports:
+      - 4000:4000
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres:14.2-alpine3.15
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
+    environment:
+      POSTGRES_DB: mydb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+
+  redis:
+    image: redis:7.0-alpine3.16
+    command: redis-server
+    volumes:
+      - redis-data:/data
+
+  prisma:
+    image: node:alpine
+    env_file: .env
+    entrypoint: npx prisma
+    working_dir: /app
+    volumes:
+      - ./src/prisma:/app/src/prisma
+    depends_on:
+      - backend
+
+volumes:
+  postgres-data:
+  redis-data:
+  minio-data:
