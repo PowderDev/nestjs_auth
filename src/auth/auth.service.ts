@@ -64,11 +64,11 @@ export class AuthService {
       throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
     }
 
-    const userData = this.tokenService.validateRefreshToken(
-      refreshToken,
-    ) as JwtPayload;
+    let userData: JwtPayload;
 
-    if (!userData) {
+    try {
+      userData = this.tokenService.validateToken(refreshToken);
+    } catch {
       throw new HttpException('Unauthorized', HttpStatus.UNAUTHORIZED);
     }
 
